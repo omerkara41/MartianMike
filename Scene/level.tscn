@@ -1,0 +1,80 @@
+[gd_scene load_steps=10 format=3 uid="uid://c8jagi0670nyn"]
+
+[ext_resource type="Script" path="res://Scripts/level.gd" id="1_64xpv"]
+[ext_resource type="PackedScene" uid="uid://wttt7gc03y6u" path="res://Scene/player.tscn" id="2_64bh7"]
+[ext_resource type="Texture2D" uid="uid://5efcxvtf84y" path="res://icon.svg" id="3_bu2dn"]
+[ext_resource type="PackedScene" uid="uid://c0kjmkkvjmpn1" path="res://Scene/jump_pad.tscn" id="4_4821a"]
+[ext_resource type="PackedScene" uid="uid://cbdqevdtqt25t" path="res://Scene/spike.tscn" id="5_m2ojv"]
+[ext_resource type="PackedScene" uid="uid://b8xrw4bt0nx87" path="res://Scene/jaw.tscn" id="5_mtlt7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n8m5r"]
+size = Vector2(1102, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_y6n21"]
+size = Vector2(1428, 32)
+
+[sub_resource type="GDScript" id="GDScript_7vwem"]
+script/source = "extends Area2D
+
+@export var jumPadForce = -500
+
+@onready var jumpPadAnimation = $AnimatedSprite2D
+
+func _on_body_entered(body):
+	if body is Player:
+		jumpPadAnimation.play(\"JumpPadAnimation\")
+		body.jump(jumPadForce)
+"
+
+[node name="level" type="Node2D"]
+script = ExtResource("1_64xpv")
+
+[node name="Player" parent="." instance=ExtResource("2_64bh7")]
+position = Vector2(125, 176)
+collision_mask = 10
+
+[node name="Ground" type="StaticBody2D" parent="."]
+position = Vector2(-359, 2)
+collision_layer = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Ground"]
+modulate = Color(0, 0, 0, 1)
+position = Vector2(162.5, 257.5)
+scale = Vector2(8.46094, 0.132813)
+texture = ExtResource("3_bu2dn")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+position = Vector2(169, 258)
+shape = SubResource("RectangleShape2D_n8m5r")
+
+[node name="DeathZone" type="Area2D" parent="."]
+collision_layer = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathZone"]
+position = Vector2(238, 340)
+shape = SubResource("RectangleShape2D_y6n21")
+
+[node name="StartPosition" type="Marker2D" parent="."]
+position = Vector2(221, 156)
+
+[node name="Traps" type="Node2D" parent="."]
+
+[node name="Jaw" parent="Traps" instance=ExtResource("5_mtlt7")]
+position = Vector2(99, 227)
+
+[node name="Spike" parent="Traps" instance=ExtResource("5_m2ojv")]
+position = Vector2(0, 224)
+
+[node name="Objects" type="Node2D" parent="."]
+
+[node name="JumpPad" parent="Objects" instance=ExtResource("4_4821a")]
+position = Vector2(215, 236)
+
+[node name="JumpPad2" parent="Objects" instance=ExtResource("4_4821a")]
+position = Vector2(257, 236)
+script = SubResource("GDScript_7vwem")
+jumPadForce = -400
+
+[connection signal="body_entered" from="DeathZone" to="." method="_on_death_zone_body_entered"]
+[connection signal="player_touch_trap" from="Traps/Jaw" to="." method="_on_trap_player_touch_trap"]
+[connection signal="player_touch_trap" from="Traps/Spike" to="." method="_on_trap_player_touch_trap"]

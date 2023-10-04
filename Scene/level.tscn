@@ -2,13 +2,11 @@
 
 [ext_resource type="Script" path="res://Scripts/level.gd" id="1_64xpv"]
 [ext_resource type="PackedScene" uid="uid://wttt7gc03y6u" path="res://Scene/player.tscn" id="2_64bh7"]
-[ext_resource type="Texture2D" uid="uid://5efcxvtf84y" path="res://icon.svg" id="3_bu2dn"]
 [ext_resource type="PackedScene" uid="uid://c0kjmkkvjmpn1" path="res://Scene/jump_pad.tscn" id="4_4821a"]
 [ext_resource type="PackedScene" uid="uid://cbdqevdtqt25t" path="res://Scene/spike.tscn" id="5_m2ojv"]
 [ext_resource type="PackedScene" uid="uid://b8xrw4bt0nx87" path="res://Scene/jaw.tscn" id="5_mtlt7"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_n8m5r"]
-size = Vector2(1102, 20)
+[ext_resource type="PackedScene" uid="uid://2x5w0ryketef" path="res://Scene/parallax_background.tscn" id="7_8qcwf"]
+[ext_resource type="PackedScene" uid="uid://bf06po3qatf5l" path="res://Scene/tile_map.tscn" id="7_udadl"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y6n21"]
 size = Vector2(1428, 32)
@@ -27,25 +25,12 @@ func _on_body_entered(body):
 "
 
 [node name="level" type="Node2D"]
+position = Vector2(9, -2)
 script = ExtResource("1_64xpv")
 
 [node name="Player" parent="." instance=ExtResource("2_64bh7")]
-position = Vector2(125, 176)
+position = Vector2(218, 176)
 collision_mask = 10
-
-[node name="Ground" type="StaticBody2D" parent="."]
-position = Vector2(-359, 2)
-collision_layer = 2
-
-[node name="Sprite2D" type="Sprite2D" parent="Ground"]
-modulate = Color(0, 0, 0, 1)
-position = Vector2(162.5, 257.5)
-scale = Vector2(8.46094, 0.132813)
-texture = ExtResource("3_bu2dn")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
-position = Vector2(169, 258)
-shape = SubResource("RectangleShape2D_n8m5r")
 
 [node name="DeathZone" type="Area2D" parent="."]
 collision_layer = 8
@@ -58,6 +43,7 @@ shape = SubResource("RectangleShape2D_y6n21")
 position = Vector2(221, 156)
 
 [node name="Traps" type="Node2D" parent="."]
+position = Vector2(61, 20)
 
 [node name="Jaw" parent="Traps" instance=ExtResource("5_mtlt7")]
 position = Vector2(99, 227)
@@ -66,6 +52,7 @@ position = Vector2(99, 227)
 position = Vector2(0, 224)
 
 [node name="Objects" type="Node2D" parent="."]
+position = Vector2(0, 21)
 
 [node name="JumpPad" parent="Objects" instance=ExtResource("4_4821a")]
 position = Vector2(215, 236)
@@ -74,6 +61,11 @@ position = Vector2(215, 236)
 position = Vector2(257, 236)
 script = SubResource("GDScript_7vwem")
 jumPadForce = -400
+
+[node name="TileMap" parent="." instance=ExtResource("7_udadl")]
+position = Vector2(0, 96)
+
+[node name="ParallaxBackground" parent="." instance=ExtResource("7_8qcwf")]
 
 [connection signal="body_entered" from="DeathZone" to="." method="_on_death_zone_body_entered"]
 [connection signal="player_touch_trap" from="Traps/Jaw" to="." method="_on_trap_player_touch_trap"]
